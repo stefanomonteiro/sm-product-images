@@ -24,11 +24,45 @@ if (!function_exists('add_sm_product_images_shortcode')) {
 
 
         if (!is_product()) {
-            return 'This is not a product page!';    
+            return 'This is not a product page!';
         }
 
 
         global $product;
+
+        // ! Get Variable Images (if Variable Product)
+        $variable_images = '';
+        // Localized obj
+        $sm_product_images_js = array(
+            'data-attributes' => [],
+        );
+        if ($product->is_type('variable')) {
+            // var_dump($product->get_available_variations());
+            foreach ($product->get_available_variations() as $variation) {
+                $assigned_attributes = '';
+                foreach ($variation['attributes'] as $key => $value) {
+                    if ($value) {
+                        // adds data-attribute to localized obj to be used in JS
+                        if (!in_array($key, $sm_product_images_js['data-attributes'])) {
+                            array_push($sm_product_images_js['data-attributes'], $key);
+                        }
+
+                        // create data-attribute to include in image html
+                        $assigned_attributes = $assigned_attributes . 'data-' . $key . '="' . $value . '"';
+                    }
+                }
+
+                $variable_images = $variable_images . '<div class="carousel-cell sm_variable_image" ' . $assigned_attributes . '>
+    
+                    <img width="' . $variation['image']['full_src_w'] . '" height="' . $variation['image']['full_src_h'] . '" src="' . $variation['image']['src'] . '" class="attachment-large size-large" alt="' . $variation['image']['alt'] . '" srcset="' . $variation['image']['srcset'] . '" />
+    
+                </div>';
+            }
+        }
+
+
+
+        // ! Get Featured Image and Gallery Images
 
         $feature_id = $product->get_image_id();
         $gallery_ids = $product->get_gallery_image_ids();
@@ -43,7 +77,8 @@ if (!function_exists('add_sm_product_images_shortcode')) {
 
         $html = '<div class="sm_product-images--container">
                     <div class="sm_product-images-carousel ' . $a['extra_class'] . '">
-                        '. $product_images .'
+                        ' . $product_images . '
+                        ' . $variable_images . '
                     </div>
                 </div>';
 
@@ -52,6 +87,7 @@ if (!function_exists('add_sm_product_images_shortcode')) {
             wp_enqueue_style('sm_product_images-css');
         }
         if (!wp_script_is('sm_product_images-js', 'enqueued')) {
+            wp_localize_script('sm_product_images-js', 'sm_product_images', $sm_product_images_js);
             wp_enqueue_script('sm_product_images-js');
         }
 

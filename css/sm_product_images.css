@@ -1,12 +1,29 @@
-
 /* Full Width Elementor Template Carousel */
 .sm_product-images-carousel .carousel-cell {
-  width: 100%;
-  /* margin-left: 60px; */
-  /* margin-right: 60px; */
+	width: 100%;
 }
 
-.flickity-page-dots .dot{
-  width: 3px;
-  height: 3px;
+.flickity-page-dots .dot {
+	width: 3px;
+	height: 3px;
+}
+
+.flickity-button,
+.flickity-button:hover {
+	background: hsla(0, 0%, 100%, 0.75);
+	border: none;
+	color: #1f1f1f;
+}
+
+@media only screen and (min-width: 767px) {
+	.sm_product-images-carousel {
+		position: relative;
+	}
+	.sm_variable_image {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		display: none;
+	}
 }
